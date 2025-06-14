@@ -1,0 +1,14 @@
+{
+  "name": "saveflow-api-ready",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.5",
+    "fluent-ffmpeg": "^2.1.2",
+    "ffmpeg-static": "^4.4.0",
+    "uuid": "^9.0.0",
+    "yt-dlp-wrap": "^2.1.1"
+  }
+}
