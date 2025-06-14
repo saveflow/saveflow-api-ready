@@ -1,10 +1,17 @@
-import YtDlpWrap from 'yt-dlp-wrap';
-import ffmpeg from 'fluent-ffmpeg';
+import { createClient } from '@supabase/supabase-js';
+import ytDlpWrap from 'yt-dlp-wrap';
 import ffmpegPath from 'ffmpeg-static';
+import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -21,19 +28,20 @@ export default async function handler(req, res) {
     const videoId = uuidv4();
     const videoPath = `/tmp/${videoId}.mp4`;
 
-    const ytDlpWrap = new YtDlpWrap();
-
-    await ytDlpWrap.execPromise([
+    const ytDlp = new ytDlpWrap();
+    await ytDlp.execPromise([
       url,
       '-f', 'mp4',
       '-o', videoPath,
       '--no-playlist'
     ]);
 
-    res.status(200).json({ message: 'Video downloaded successfully', videoPath });
-
+    return res.status(200).json({
+      message: 'Download complete',
+      path: videoPath
+    });
   } catch (error) {
-    console.error('Error downloading video:', error);
-    res.status(500).json({ error: 'Failed to download video' });
+    console.error('Download error:', error);
+    return res.status(500).json({ error: 'Failed to download video' });
   }
 }
